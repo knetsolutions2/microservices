@@ -1,0 +1,153 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: students
+spec:
+  selector:
+    matchLabels:
+      app: students
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: students
+    spec:
+      containers:
+      - name: students
+        image: sureshkvl/students:1.2
+        ports:
+        - containerPort: 5000
+        imagePullPolicy: Always
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: schools
+spec:
+  selector:
+    matchLabels:
+      app: schools
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: schools
+    spec:
+      containers:
+      - name: schools
+        image: sureshkvl/schools:1.2
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: external
+spec:
+  selector:
+    matchLabels:
+      app: external
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: external
+    spec:
+      containers:
+      - name: external
+        image: sureshkvl/external:1.2
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apigw
+spec:
+  selector:
+    matchLabels:
+      app: apigw
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: apigw
+    spec:
+      containers:
+      - name: apigw
+        image: sureshkvl/apigw:1.1
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: testpod
+spec:
+  selector:
+    matchLabels:
+      app: testpod
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: testpod
+    spec:
+      containers:
+      - name: students
+        image: sureshkvl/apigw:1.0
+        imagePullPolicy: Always
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: schools
+spec:
+  selector:
+    app: schools
+  ports:
+    - name: http
+      port: 5000
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: students
+spec:
+  selector:
+    app: students
+  ports:
+    - name: http
+      port: 5000
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: external
+spec:
+  selector:
+    app: external
+  ports:
+    - name: http
+      port: 5000
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: apigw
+spec:
+  selector:
+    app: apigw
+  ports:
+    - name: http
+      port: 8080
+      nodePort: 30010
+  type: NodePort
+---
